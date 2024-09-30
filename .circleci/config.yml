@@ -1,0 +1,207 @@
+# Use the latest 2.1 version of CircleCI pipeline process engine.
+# See: https://circleci.com/docs/2.0/configuration-reference
+version: 2.1
+
+orbs:
+  node: circleci/node@5.1.0
+  jq: circleci/jq@2.2.0
+
+parameters:
+  # Runtime Params
+  node_version:
+    default: '18.18.2'
+    type: string
+
+  # Cache version in CircleCI, can be specified if cache required to be cleared
+  cache_version:
+    default: 'v1'
+    type: string
+
+  # Override parameters, useful for manually triggering and/or testing of workflows
+  execute_on_push_and_pull_request:
+    default: false
+    type: boolean
+
+  execute_on_merge:
+    default: false
+    type: boolean
+
+  on_publish:
+    default: false
+    type: boolean
+
+  only_redeploy:
+    default: false
+    type: boolean
+
+commands:
+  setup_command:
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: 'npm'
+          cache-version: << pipeline.parameters.cache_version >>
+          include-branch-in-cache-key: true
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
+  release_command:
+    steps:
+      - run:
+          name: Release
+          command: npm run release
+
+  build_command:
+    steps:
+      - run:
+          name: Build
+          command: npm run build
+
+  lint_command:
+    steps:
+      - run:
+          name: Lint
+          command: npm run lint
+
+  unit_tests_command:
+    steps:
+      - run:
+          name: Unit Tests
+          command: npm run test:unit
+
+  integration_tests_command:
+    steps:
+      - run:
+          name: Integration Tests
+          command: npm run test:integration
+
+  e2e_tests_command:
+    steps:
+      - run:
+          name: e2e Tests
+          command: npm run test:e2e
+
+jobs:
+  release:
+    executor:
+      name: node/default
+      tag: << pipeline.parameters.node_version >>
+    resource_class: medium
+    steps:
+      - release_command
+
+  setup:
+    executor:
+      name: node/default
+      tag: << pipeline.parameters.node_version >>
+    resource_class: medium
+    steps:
+      - setup_command
+
+  lint:
+    executor:
+      name: node/default
+      tag: << pipeline.parameters.node_version >>
+    resource_class: medium
+    steps:
+      - attach_workspace:
+          at: .
+      - lint_command
+
+  test:
+    executor:
+      name: node/default
+      tag: << pipeline.parameters.node_version >>
+    resource_class: medium
+    steps:
+      - attach_workspace:
+          at: .
+      - unit_tests_command
+      - integration_tests_command
+      - e2e_tests_command
+
+  build:
+    executor:
+      name: node/default
+      tag: << pipeline.parameters.node_version >>
+    resource_class: large
+    steps:
+      - attach_workspace:
+          at: .
+      - build_command
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
+  deploy:
+    executor:
+      name: node/default
+      tag: << pipeline.parameters.node_version >>
+    resource_class: large
+    steps:
+      - run: echo "Mock Deploy"
+
+workflows:
+  on-push-and-pull-request:
+    # only run when not on main/master unless override set manually
+    when:
+      or:
+        - equal:
+            [true, << pipeline.parameters.execute_on_push_and_pull_request >>]
+        - and:
+            - not:
+                matches:
+                  pattern: '^main$'
+                  value: << pipeline.git.branch >>
+            - not:
+                matches:
+                  pattern: '^master$'
+                  value: << pipeline.git.branch >>
+    jobs:
+      - setup
+      - lint:
+          requires:
+            - setup
+      - test:
+          requires:
+            - lint
+      - build:
+          requires:
+            - test
+      - deploy:
+          requires:
+            - build
+
+  on-merge:
+    # only run on main/master, unless override set manually
+    when:
+      and:
+        - equal: [false, << pipeline.parameters.only_redeploy >>]
+        - or:
+            - equal: [true, << pipeline.parameters.execute_on_merge >>]
+            - matches:
+                pattern: '^main$'
+                value: << pipeline.git.branch >>
+            - matches:
+                pattern: '^master$'
+                value: << pipeline.git.branch >>
+    jobs:
+      - setup
+      - lint:
+          requires:
+            - setup
+      - test:
+          requires:
+            - lint
+      - build:
+          requires:
+            - test
+      - deploy:
+          requires:
+            - build
+      - release:
+          requires:
+            - deploy
