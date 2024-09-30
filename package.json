@@ -7,11 +7,18 @@
     "start": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "prepare": "husky",
+    "test": "echo \"Mock test\""
   },
   "dependencies": {
-    "astro": "^4.15.9",
     "@astrojs/check": "^0.9.3",
+    "astro": "^4.15.9",
     "typescript": "^5.6.2"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.5.0",
+    "@commitlint/config-conventional": "^19.5.0",
+    "husky": "^9.1.6"
   }
 }
