@@ -9,7 +9,7 @@ orbs:
 parameters:
   # Runtime Params
   node_version:
-    default: '18.18.2'
+    default: '21.6.1'
     type: string
 
   # Cache version in CircleCI, can be specified if cache required to be cleared
