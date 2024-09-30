@@ -61,12 +61,13 @@ commands:
 
 jobs:
   release:
-    executor:
-      name: node/default
-      tag: << pipeline.parameters.node_version >>
-    resource_class: medium
+    executor: node/default
     steps:
-      - release_command
+      - checkout
+      - node/install-packages # Install and automatically cache packages
+      # Run optional required steps before releasing
+      # - run: npm run build-script
+      - run: npx semantic-release
 
   setup:
     executor:
