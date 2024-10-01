@@ -30,6 +30,9 @@ export default {
     const regex = new RegExp(`\\[${LINEAR_TEAM_PREFIX}-(\\d+)\\]`); // Matches "[LINEAR_TEAM_PREFIX-123]"
     const match = subject.match(regex);
 
+    // eslint-disable-next-line no-console
+    console.log("IM RUNNING");
+
     if (match) {
       const id = match[1]; // Extract the ID from the subject
       const link = `[${LINEAR_TEAM_PREFIX}-${id}](https://linear.app/${LINEAR_WORKSPACE}/issue/${LINEAR_TEAM_PREFIX.toLowerCase()}-${id})`; // Create the markdown link
