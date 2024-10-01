@@ -34,6 +34,7 @@ export default {
     console.log("IM RUNNING");
 
     if (match) {
+      console.log("match :>> ", match);
       const id = match[1]; // Extract the ID from the subject
       const link = `[${LINEAR_TEAM_PREFIX}-${id}](https://linear.app/${LINEAR_WORKSPACE}/issue/${LINEAR_TEAM_PREFIX.toLowerCase()}-${id})`; // Create the markdown link
 
