@@ -24,32 +24,31 @@ export default {
     if (!LINEAR_TEAM_PREFIX || !LINEAR_WORKSPACE) return [true];
 
     const subject = parsed.subject;
-    const body = parsed.body;
+    let body = parsed.body;
 
     // Create a dynamic regex using the injected prefix
     const regex = new RegExp(`\\[${LINEAR_TEAM_PREFIX}-(\\d+)\\]`); // Matches "[LINEAR_TEAM_PREFIX-123]"
     const match = subject.match(regex);
 
-    // eslint-disable-next-line no-console
-    console.log("IM RUNNING");
-
     if (match) {
-      console.log("match :>> ", match);
       const id = match[1]; // Extract the ID from the subject
       const link = `[${LINEAR_TEAM_PREFIX}-${id}](https://linear.app/${LINEAR_WORKSPACE}/issue/${LINEAR_TEAM_PREFIX.toLowerCase()}-${id})`; // Create the markdown link
 
-      // Append the link to the body
-      const newBody = body ? `${body}\n\n${link}` : link; // Add the link on a new line if there's a body, otherwise just add it
+      // Check if the correct link is already present in the body
+      if (body && body.includes(link)) {
+        return [true]; // The correct link is already present, no need to modify
+      }
 
-      // eslint-disable-next-line no-console
+      // If the correct link is not in the body, append it
+      const newBody = body ? `${body}\n\n${link}` : link; // Add the link on a new line if there's a body, otherwise just add it
       parsed.body = newBody;
 
       return [
-        true,
-        `Body updated with link: ${link}`, // Success message
+        false, // Set to false to fail the validation if the link is missing or incorrect
+        `The commit body must include the correct link: ${link}`, // Validation error message
       ];
     }
 
-    return [true]; // If no match, return valid
+    return [true]; // If no match in the subject, return valid
   },
 };
