@@ -1,0 +1,26 @@
+# Read the commit message file
+COMMIT_MSG_FILE=$1
+
+# Read the current commit message
+COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+
+# Define the prefix and regex
+LINEAR_TEAM_PREFIX="SEMVER"
+REGEX="\[${LINEAR_TEAM_PREFIX}-(\d+)\]"
+
+echo "COMMIT_MSG: $COMMIT_MSG"
+
+# Check for the regex match in the subject
+if echo "$COMMIT_MSG" | grep -qE "$REGEX"; then
+    # Extract the ID from the subject
+    ID=$(echo "$COMMIT_MSG" | grep -oE "$REGEX" | grep -oE '\d+')
+
+    # Create the markdown link
+    LOWER_PREFIX=$(echo "$LINEAR_TEAM_PREFIX" | tr '[:upper:]' '[:lower:]') # Convert to lowercase
+    LINK="[${LINEAR_TEAM_PREFIX}-${ID}](https://linear.app/rotate/issue/${LOWER_PREFIX}-${ID})"
+
+    echo "LINK: $LINK"
+
+    # Append the link to the commit message
+    echo -e "$COMMIT_MSG\n\n$LINK" > "$COMMIT_MSG_FILE"
+fi
