@@ -23,4 +23,6 @@ if echo "$COMMIT_MSG" | grep -qE "$REGEX"; then
 
     # Append the link to the commit message
     echo -e "$COMMIT_MSG\n\n$LINK" > "$COMMIT_MSG_FILE"
+
+    echo "Appended the link to the commit message"
 fi
