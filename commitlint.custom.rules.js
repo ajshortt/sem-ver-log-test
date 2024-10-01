@@ -49,6 +49,6 @@ export default {
       ];
     }
 
-    return [true]; // If no match in the subject, return valid
+    return [true]; // If no match in the subject, return valid.
   },
 };
