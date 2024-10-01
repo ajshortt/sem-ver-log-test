@@ -5,6 +5,7 @@ export default {
   rules: {
     "subject-case": [2, "always", "sentence-case"],
     "linear-prefix": [2, "always", "SEMVER"],
+    "linear-link": [2, "always", { prefix: "SEMVER", workspace: "rotate" }],
   },
   plugins: [
     {
