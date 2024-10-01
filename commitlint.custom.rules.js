@@ -42,12 +42,11 @@ export default {
       const newBody = body ? `${body}\n\n${link}` : link; // Add the link on a new line if there's a body, otherwise just add it
 
       // eslint-disable-next-line no-console
-      console.log(newBody);
+      parsed.body = newBody;
 
       return [
         true,
         `Body updated with link: ${link}`, // Success message
-        { body: newBody }, // Update the body with the new link
       ];
     }
 
