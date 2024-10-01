@@ -41,6 +41,9 @@ export default {
       // Append the link to the body
       const newBody = body ? `${body}\n\n${link}` : link; // Add the link on a new line if there's a body, otherwise just add it
 
+      // eslint-disable-next-line no-console
+      console.log(newBody);
+
       return [
         true,
         `Body updated with link: ${link}`, // Success message
