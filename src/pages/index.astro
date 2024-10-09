@@ -1,6 +1,19 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Card from "../components/Card.astro";
+import logger from "../utils/logger";
+
+try {
+  logger.debug("Test debug");
+
+  if (1 !== 2) {
+    throw new Error("Test Error");
+  }
+} catch (error) {
+  logger.error("Test Error");
+}
+
+logger.close();
 ---
 
 <Layout title="Welcome to Astro.">

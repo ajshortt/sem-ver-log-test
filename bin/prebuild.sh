@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Get the current git commit SHA
-COMMIT_SHA=$(git rev-parse HEAD)
+COMMIT_SHA=$(git rev-parse --short HEAD)
 
 # Specify the output directory and file
 OUTPUT_DIR="src/config"

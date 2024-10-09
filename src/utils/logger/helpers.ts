@@ -1,3 +1,3 @@
-export function generateLoggerMessage(message: string, releaseId?: string): string {
-  return releaseId ? `[${releaseId}] ${message}` : message
+export function generateLoggerMessage(message: string, releaseId?: string, transactionId?: string): string {
+  return `${releaseId && `[${releaseId}] `}${transactionId && `(${transactionId}) `}${message}`
 }

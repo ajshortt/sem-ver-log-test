@@ -3,6 +3,7 @@ export interface Logdrain {
   error: (message: string, payload?: LoggerPayload) => void
   warn: (message: string, payload?: LoggerPayload) => void
   info: (message: string, payload?: LoggerPayload) => void
+  close: () => void
 }
 
 export type LoggerPayload = Record<string, string | number | null> & {
